@@ -2,7 +2,6 @@ import csv
 import cv2
 import numpy as np
 
-
 images = []
 measurements = []
 
@@ -31,13 +30,12 @@ def read_dataset(folder, correction=0.3):
 
 
 images_train2, measurements_train2 = read_dataset('./train2')
-images_train3, measurements_train3 = read_dataset('./train3')
-
 images.extend(images_train2)
-images.extend(images_train3)
-
 measurements.extend(measurements_train2)
-measurements.extend(measurements_train3)
+
+# images_train3, measurements_train3 = read_dataset('./train3')
+# images.extend(images_train3)
+# measurements.extend(measurements_train3)
 
 augmented_images = []
 augmented_measurements = []
@@ -69,7 +67,7 @@ model.add(Dense(10))
 model.add(Dense(1))
 
 model.compile(loss='mse', optimizer='adam')
-model.fit(X_train, y_train, validation_split=0.2, shuffle=True, nb_epoch=5)
+model.fit(X_train, y_train, validation_split=0.2, shuffle=True, nb_epoch=3)
 
 model.save('model.h5')
 exit()
