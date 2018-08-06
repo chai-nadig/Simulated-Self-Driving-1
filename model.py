@@ -40,7 +40,7 @@ def read_dataset():
 # using `correction`.
 #
 # The final batch is shuffled and returned
-def generator(samples, batch_size=32, correction=0.3):
+def generator(samples, batch_size=32, correction=0.25):
     num_samples = len(samples)
     while 1:
         shuffle(samples)
@@ -75,7 +75,7 @@ def generator(samples, batch_size=32, correction=0.3):
 
 # Read all lines and do a 20% split for training and validation
 all_samples = read_dataset()
-train_samples, validation_samples = train_test_split(all_samples, test_size=0.2)
+train_samples, validation_samples = train_test_split(all_samples, test_size=0.28)
 
 # compile and train the model using the generator function
 train_generator = generator(train_samples, batch_size=32)

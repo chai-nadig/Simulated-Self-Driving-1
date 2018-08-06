@@ -38,21 +38,49 @@ Input and output files
 
 | Filename | Description |
 |----------|:------------|
-| `train4.zip` | The zip file of images which are used to train and obtain `model.h5` |
+| `train4.zip` | The zip file of images which are used to train and obtain `model.h5` <br/> **Note:** This file isn't checked into the repo. Download it [here](https://drive.google.com/file/d/1zg2ouWtWFiOho7PPJa0Uqxp6Iqz-7UAY/view?usp=sharing).  |
 | `video.mp4` | The video file of the car driving in autonomous mode |
 
+#### 2. Training
+* Download this simulator provided by Udacity - [udacity/self-driving-car-sim](https://github.com/udacity/self-driving-car-sim).
+* Extract `train4.zip` into the project folder.
+* The final directory structure should look like this 
+```
+Simulated-Self-Driving-1
+|--- model.py
+|--- drive.py
+|--- model.h5
+|--- train4
+     |--- driving_log.csv
+     |--- IMG
+```
+* Run the following command in the terminal
+```bash
+python model.py
+```
+* This will produce a new `model.h5`
 
-#### 2. Driving in autonomous mode
-* Download this simulator provided by Udacity - [udacity/self-driving-car-sim](https://github.com/udacity/self-driving-car-sim)
-* Run the simulator and select "Autonomous Mode
-* Run the follow command in a separate terminal 
+#### 3. Driving in autonomous mode
+* Run the simulator and select "Autonomous Mode".
+* Run the follow command in a separate terminal.
 ```sh
 python drive.py model.h5
 ```
 
-### Model Architecture and Training Strategy
+### Architecture and Training
 
-#### 1. An appropriate model architecture has been employed
+#### 1. Architecture
+
+* The neural network used to train the model was developed at Nvidia.
+* It's described in detail [here](https://devblogs.nvidia.com/deep-learning-self-driving-cars/).
+* It contains the following layers
+
+| Layer | Description |
+|-------|-------------|
+| Normalization | Convert pixel values to lie between 0 and 1 and mean center them |
+| Cropping | Crop the input images to discard pixels that don't contribute to the training |
+
+
 
 My model consists of a convolution neural network with 3x3 filter sizes and depths between 32 and 128 (model.py lines 18-24) 
 
