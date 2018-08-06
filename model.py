@@ -10,7 +10,7 @@ with open('./train2/driving_log.csv') as csvfile:
 
 images = []
 measurements = []
-correction = 0.2
+correction = 0.3
 for line in lines:
     for i in range(3):
         source_path = line[i]
