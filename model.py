@@ -29,13 +29,17 @@ def read_dataset(folder, correction=0.3):
     return images, measurements
 
 
-images_train2, measurements_train2 = read_dataset('./train2')
-images.extend(images_train2)
-measurements.extend(measurements_train2)
+# images_train2, measurements_train2 = read_dataset('./train2')
+# images.extend(images_train2)
+# measurements.extend(measurements_train2)
 
 # images_train3, measurements_train3 = read_dataset('./train3')
 # images.extend(images_train3)
 # measurements.extend(measurements_train3)
+
+images_train4, measurements_train4 = read_dataset('./train4')
+images.extend(images_train4)
+measurements.extend(measurements_train4)
 
 augmented_images = []
 augmented_measurements = []
