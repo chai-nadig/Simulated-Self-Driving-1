@@ -108,48 +108,41 @@ The model used an adam optimizer, so the learning rate was not tuned manually (m
 
 #### 1. Model Design Approach
 
-Here're the iterative steps taken to build this model
+Iterative steps taken to build this model:
 
 | Step | Description | Remarks |
 |------|-------------|:--------|
-|Step 1| Regression Model | Steering angle was oscillating rapidly and the car easily went off track |
-|Step 2| Normalization | Steering angle oscillations reduced. The car moved down the lane further than before but went off track again |
-|Step 3| `LeNet` model | Autonomous driving was much better than previous to trials. But the car couldn't corner curves and went into the lake every time. |
-|Step 4| `LeNet` + Augmented data - mirror images | With augmented data, there wasn't must luck cornering the first left turn as augmenting only helped train the model for right turns |
-|Step 5| `LeNet` + Augmented data + Left and Right Camera Images | With Left and Right camera images and a correction factor for measurements, the car was able to corner most part of the first left turn. But at the bridge it hit the curb and stopped abruptly. |
-|Step 6| `LeNet` + Augmented data + Left and Right Camera Images + Cropping | Driving was better than the previous step. The car crossed the bridge and drove further than the previous step. However, it still went off track at the second left turn. |
-|Step 7| Replacing `LeNet` with Nvidia's Network Architecture | With the nvidia net, autonomous driving was vastly improved. The car was able to drive much further down the track. However, it still had trouble at a few curves |
-|Step 8| Using a generator with smaller batch size | With a generator, training was completed quickly. A small batch size seemed to improve the model significantly. The car stopped going off track. |
+| 1| Regression Model | Steering angle was oscillating rapidly and the car easily went off track. |
+| 2| Normalization | Steering angle oscillations reduced. The car moved down the lane further than before but went off track again. |
+| 3| `LeNet` model | Autonomous driving was much better than previous to trials. But the car couldn't corner curves and went into the lake every time. |
+| 4| `LeNet` + Augmented data - mirror images | With augmented data, there wasn't must luck cornering the first left turn as augmenting only helped train the model for right turns. |
+| 5| `LeNet` + Augmented data + Left and Right Camera Images | With Left and Right camera images and a correction factor for measurements, the car was able to corner most part of the first left turn. But at the bridge it hit the curb and stopped abruptly. |
+| 6| `LeNet` + Augmented data + Left and Right Camera Images + Cropping | Driving was better than the previous step. The car crossed the bridge and drove further than the previous step. However, it still went off track at the second left turn. |
+| 7| Replacing `LeNet` with Nvidia's Network Architecture | With the nvidia net, autonomous driving was vastly improved. The car was able to drive much further down the track. However, it still had trouble at a few curves. |
+| 8| Using a generator with smaller batch size | With a generator, training was completed quickly. A small batch size seemed to improve the model significantly. The car stopped going off track. |
  
 
 #### 2. Training data collection
 
-Training data was chosen to keep the vehicle driving on the road. I used a combination of center lane driving, recovering from the left and right sides of the road ... 
+Different approaches to get the training data:
 
-For details about how I created the training data, see the next section. 
+|Approach | Description | Remarks |
+|-------- |:------------|:--------|
+| 1| Drove 1 lap using **arrow keys** to steer | This resulted in a model wasn't accurate and the car oscillated too much. |
+| 2| Drove 1 lap using **mouse** to steer with frequent short clicks to change steering angle | The autonmous driving was better than before, but it was visible than the steering angle was changing rapidly. |
+| 3| Drove 1 lap using **mouse** to steer with more constant steering angles | With this training set, the cornering of curves was smoother than before. However, at certain turns, the steering angle wouldn't receed to straighten the car. |
+| 4| Drove 2 laps using **mouse**. One lap with frequent short clicks to change steering angle. One lap with more constant steering angles | This proved to be most effective to train the model. The combination of frequent steering angle changes and constant steering angles did a great job training the model! |
 
-To capture good driving behavior, I first recorded two laps on track one using center lane driving. Here is an example image of center lane driving:
+* Images from all three cameras were used.
+* Results of various correction factors:
 
-![alt text][image2]
+|Correction Factor | Remarks |
+|------------------|:--------|
+| 0.15 | At curves the car would hit the curb when it was at already into the curve. The model wasn't great at cornering with this low correction factor. |
+| 0.20 | The car would nearly finish getting out of the curve but would hit the curb as it was ending the curve and get stuck. |
+| 0.30 | The car oscillated a lot within the track. A slight steer towards either of the curbs with push the car away from it ending up with a lot oscillation in steering angle. |
+| 0.28 **(optimal)** | The car was able to drive in the center of the lane and corner curves correctly with this correction factor. |
 
-I then recorded the vehicle recovering from the left side and right sides of the road back to center so that the vehicle would learn to .... These images show what a recovery looks like starting from ... :
-
-![alt text][image3]
-![alt text][image4]
-![alt text][image5]
-
-Then I repeated this process on track two in order to get more data points.
-
-To augment the data sat, I also flipped images and angles thinking that this would ... For example, here is an image that has then been flipped:
-
-![alt text][image6]
-![alt text][image7]
-
-Etc ....
-
-After the collection process, I had X number of data points. I then preprocessed this data by ...
-
-
-I finally randomly shuffled the data set and put Y% of the data into a validation set. 
-
-I used this training data for training the model. The validation set helped determine if the model was over or under fitting. The ideal number of epochs was Z as evidenced by ... I used an adam optimizer so that manually training the learning rate wasn't necessary.
+* The camera images were also augmented by flipping them. 
+* Augmenting helped train the model for right turns.
+* A 20% split was chosen for training and validation samples.
