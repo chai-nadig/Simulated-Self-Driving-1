@@ -67,9 +67,9 @@ python model.py
 python drive.py model.h5
 ```
 
-### Architecture and Training
+### Architecture
 
-#### 1. Architecture
+#### 1. Neural Network
 
 * The neural network used to train the model was developed at Nvidia.
 * It's described in detail [here](https://devblogs.nvidia.com/deep-learning-self-driving-cars/).
@@ -77,58 +77,56 @@ python drive.py model.h5
 
 | Layer | Description |
 |-------|-------------|
-| Normalization | Convert pixel values to lie between 0 and 1 and mean center them |
+| Normalization | Keras Lambda layer  |
 | Cropping | Crop the input images to discard pixels that don't contribute to the training |
+| 2D Convolution | `5x5` filter with `relu` activation |
+| 2D Convolution | `5x5` filter with `relu` activation |
+| 2D Convolution | `5x5` filter with `relu` activation |
+| 2D Convolution | `3x3` filter with `relu` activation |
+| 2D Convolution | `3x3` filter with `relu` activation |
+| Flatten | &nbsp; |
+| Fully Connected Layer | `1164` outputs |
+| Fully Connected Layer | `100` outputs |
+| Fully Connected Layer | `50` outputs |
+| Fully Connected Layer | `10` outputs |
+| Fully Connected Final Output Layer | `1` output |
+ 
+* In `model.py` lines `85-104` construct the neural network.
+* The network includes RELU activation layers in each of the 2D Convolution layers to introduce nonlinearity.
 
+#### 2. Reducing overfitting
 
-
-My model consists of a convolution neural network with 3x3 filter sizes and depths between 32 and 128 (model.py lines 18-24) 
-
-The model includes RELU layers to introduce nonlinearity (code line 20), and the data is normalized in the model using a Keras lambda layer (code line 18). 
-
-#### 2. Attempts to reduce overfitting in the model
-
-The model contains dropout layers in order to reduce overfitting (model.py lines 21). 
-
-The model was trained and validated on different data sets to ensure that the model was not overfitting (code line 10-16). The model was tested by running it through the simulator and ensuring that the vehicle could stay on the track.
+* To reduce overfitting, images from all three cameras are used to train the model.
+* There is a correction factor of `0.28` added and subtracted from the left and right camera images.
+* Further more, the dataset is augmented with the mirror images of the three camera images.
 
 #### 3. Model parameter tuning
 
-The model used an adam optimizer, so the learning rate was not tuned manually (model.py line 25).
+The model used an adam optimizer, so the learning rate was not tuned manually (model.py line `106`).
 
-#### 4. Appropriate training data
+### Modelling and Training Strategy
+
+#### 1. Model Design Approach
+
+Here're the iterative steps taken to build this model
+
+| Step | Description | Remarks |
+|------|-------------|:--------|
+|Step 1| Regression Model | Steering angle was oscillating rapidly and the car easily went off track |
+|Step 2| Normalization | Steering angle oscillations reduced. The car moved down the lane further than before but went off track again |
+|Step 3| `LeNet` model | Autonomous driving was much better than previous to trials. But the car couldn't corner curves and went into the lake every time. |
+|Step 4| `LeNet` + Augmented data - mirror images | With augmented data, there wasn't must luck cornering the first left turn as augmenting only helped train the model for right turns |
+|Step 5| `LeNet` + Augmented data + Left and Right Camera Images | With Left and Right camera images and a correction factor for measurements, the car was able to corner most part of the first left turn. But at the bridge it hit the curb and stopped abruptly. |
+|Step 6| `LeNet` + Augmented data + Left and Right Camera Images + Cropping | Driving was better than the previous step. The car crossed the bridge and drove further than the previous step. However, it still went off track at the second left turn. |
+|Step 7| Replacing `LeNet` with Nvidia's Network Architecture | With the nvidia net, autonomous driving was vastly improved. The car was able to drive much further down the track. However, it still had trouble at a few curves |
+|Step 8| Using a generator with smaller batch size | With a generator, training was completed quickly. A small batch size seemed to improve the model significantly. The car stopped going off track. |
+ 
+
+#### 2. Training data collection
 
 Training data was chosen to keep the vehicle driving on the road. I used a combination of center lane driving, recovering from the left and right sides of the road ... 
 
 For details about how I created the training data, see the next section. 
-
-### Model Architecture and Training Strategy
-
-#### 1. Solution Design Approach
-
-The overall strategy for deriving a model architecture was to ...
-
-My first step was to use a convolution neural network model similar to the ... I thought this model might be appropriate because ...
-
-In order to gauge how well the model was working, I split my image and steering angle data into a training and validation set. I found that my first model had a low mean squared error on the training set but a high mean squared error on the validation set. This implied that the model was overfitting. 
-
-To combat the overfitting, I modified the model so that ...
-
-Then I ... 
-
-The final step was to run the simulator to see how well the car was driving around track one. There were a few spots where the vehicle fell off the track... to improve the driving behavior in these cases, I ....
-
-At the end of the process, the vehicle is able to drive autonomously around the track without leaving the road.
-
-#### 2. Final Model Architecture
-
-The final model architecture (model.py lines 18-24) consisted of a convolution neural network with the following layers and layer sizes ...
-
-Here is a visualization of the architecture (note: visualizing the architecture is optional according to the project rubric)
-
-![alt text][image1]
-
-#### 3. Creation of the Training Set & Training Process
 
 To capture good driving behavior, I first recorded two laps on track one using center lane driving. Here is an example image of center lane driving:
 
