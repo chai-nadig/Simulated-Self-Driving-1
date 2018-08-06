@@ -2,24 +2,42 @@ import csv
 import cv2
 import numpy as np
 
-lines = []
-with open('./train3/driving_log.csv') as csvfile:
-    reader = csv.reader(csvfile)
-    for line in reader:
-        lines.append(line)
 
 images = []
 measurements = []
-correction = 0.3
-for line in lines:
-    for i in range(3):
-        source_path = line[i]
-        filename = source_path.split('/')[-1]
-        current_path = './train3/IMG/' + filename
-        image = cv2.imread(current_path)
-        images.append(image)
-        measurement = float(line[3]) + (0 if i == 0 else correction if i == 1 else -correction)
-        measurements.append(measurement)
+
+
+def read_dataset(folder, correction=0.3):
+    lines = []
+    images = []
+    measurements = []
+
+    with open('{}/driving_log.csv'.format(folder)) as csvfile:
+        reader = csv.reader(csvfile)
+        for line in reader:
+            lines.append(line)
+
+    for line in lines:
+        for i in range(3):
+            source_path = line[i]
+            filename = source_path.split('/')[-1]
+            current_path = '{}/IMG/{}'.format(folder, filename)
+            image = cv2.imread(current_path)
+            images.append(image)
+            measurement = float(line[3]) + (0 if i == 0 else correction if i == 1 else -correction)
+            measurements.append(measurement)
+
+    return images, measurements
+
+
+images_train2, measurements_train2 = read_dataset('./train2')
+images_train3, measurements_train3 = read_dataset('./train3')
+
+images.extend(images_train2)
+images.extend(images_train3)
+
+measurements.extend(measurements_train2)
+measurements.extend(measurements_train3)
 
 augmented_images = []
 augmented_measurements = []
@@ -51,7 +69,7 @@ model.add(Dense(10))
 model.add(Dense(1))
 
 model.compile(loss='mse', optimizer='adam')
-model.fit(X_train, y_train, validation_split=0.2, shuffle=True, nb_epoch=3)
+model.fit(X_train, y_train, validation_split=0.2, shuffle=True, nb_epoch=5)
 
 model.save('model.h5')
 exit()
