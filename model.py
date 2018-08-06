@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 
 lines = []
-with open('./train2/driving_log.csv') as csvfile:
+with open('./train3/driving_log.csv') as csvfile:
     reader = csv.reader(csvfile)
     for line in reader:
         lines.append(line)
@@ -15,7 +15,7 @@ for line in lines:
     for i in range(3):
         source_path = line[i]
         filename = source_path.split('/')[-1]
-        current_path = './train2/IMG/' + filename
+        current_path = './train3/IMG/' + filename
         image = cv2.imread(current_path)
         images.append(image)
         measurement = float(line[3]) + (0 if i == 0 else correction if i == 1 else -correction)
